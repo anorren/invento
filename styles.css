@@ -64,6 +64,95 @@ svg {
   stroke-width: 2;
 }
 
+.access-page {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(135deg, rgba(11, 18, 32, 0.94), rgba(14, 24, 43, 0.98)),
+    url("assets/start-hero-equipment.png") center / cover;
+}
+
+.access-shell {
+  width: 100%;
+  max-width: 520px;
+}
+
+.access-brand {
+  height: auto;
+  border: 0;
+  padding: 0 0 18px;
+}
+
+.access-brand.brand {
+  border-right: 0;
+}
+
+.access-panel {
+  border: 1px solid rgba(164, 174, 194, 0.24);
+  border-radius: var(--radius);
+  background: rgba(18, 28, 46, 0.9);
+  box-shadow: var(--shadow-soft);
+  padding: 28px;
+  backdrop-filter: blur(12px);
+}
+
+.access-panel h2 {
+  margin: 18px 0 10px;
+  font-size: 34px;
+  line-height: 1.05;
+  font-weight: 820;
+}
+
+.access-panel p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.access-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.access-field {
+  display: grid;
+  gap: 8px;
+}
+
+.access-field span {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.access-field input {
+  min-height: 50px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #10192b;
+  color: var(--text);
+  padding: 0 14px;
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+.access-submit {
+  width: 100%;
+  min-height: 52px;
+  justify-content: center;
+}
+
+.access-error {
+  min-height: 20px;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 720;
+}
+
 .inventory-app {
   height: 100vh;
   min-height: 720px;
@@ -1781,6 +1870,23 @@ textarea:focus {
 @media (max-width: 820px) {
   body {
     background: #fff;
+  }
+
+  .access-page {
+    align-items: stretch;
+    padding: 18px;
+  }
+
+  .access-shell {
+    align-self: center;
+  }
+
+  .access-panel {
+    padding: 22px;
+  }
+
+  .access-panel h2 {
+    font-size: 30px;
   }
 
   .landing-page {

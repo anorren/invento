@@ -33,6 +33,8 @@ const locations = [
 ];
 const purchaseYears = Array.from({ length: 41 }, (_, index) => String(2000 + index));
 const storageKey = "invento.inventory.v2";
+const accessStorageKey = "invento.access.granted.v1";
+const accessCode = "Musik2026";
 const supabaseTable = "inventory_items";
 
 const inventoryIdRules = {
@@ -333,6 +335,10 @@ const initialDevices = [
   }
 ];
 
+const accessPage = document.querySelector("#accessPage");
+const accessForm = document.querySelector("#accessForm");
+const accessCodeInput = document.querySelector("#accessCodeInput");
+const accessError = document.querySelector("#accessError");
 const landingPage = document.querySelector("#landingPage");
 const inventoryApp = document.querySelector("#inventoryApp");
 const addProductButton = document.querySelector("#addProductButton");
@@ -344,6 +350,7 @@ const landingCapturedCount = document.querySelector("#landingCapturedCount");
 const landingAreaCount = document.querySelector("#landingAreaCount");
 const brandHomeButton = document.querySelector("#brandHomeButton");
 const homeButton = document.querySelector("#homeButton");
+const logoutButton = document.querySelector("#logoutButton");
 const queueList = document.querySelector("#queueList");
 const queueCount = document.querySelector("#queueCount");
 const queueTotalText = document.querySelector("#queueTotalText");
@@ -405,6 +412,27 @@ let draftCounter = 1;
 let supabaseClient = null;
 let dataMode = "local";
 let remoteSaveTimer = null;
+
+function normalizeAccessCode(value) {
+  return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
+}
+
+function hasAccess() {
+  return localStorage.getItem(accessStorageKey) === "true";
+}
+
+function grantAccess() {
+  localStorage.setItem(accessStorageKey, "true");
+  accessError.textContent = "";
+  accessCodeInput.value = "";
+  showLanding();
+}
+
+function revokeAccess() {
+  localStorage.removeItem(accessStorageKey);
+  showAccess();
+  showToast("Abgemeldet");
+}
 
 function createOption(value) {
   const option = document.createElement("option");
@@ -1406,12 +1434,19 @@ function render() {
 }
 
 function showLanding() {
+  accessPage.hidden = true;
   inventoryApp.hidden = true;
   landingPage.hidden = false;
   document.body.classList.remove("inventory-active");
 }
 
 function showInventory(message) {
+  if (!hasAccess()) {
+    showAccess();
+    return;
+  }
+
+  accessPage.hidden = true;
   landingPage.hidden = true;
   inventoryApp.hidden = false;
   document.body.classList.add("inventory-active");
@@ -1420,6 +1455,15 @@ function showInventory(message) {
   if (message) {
     showToast(message);
   }
+}
+
+function showAccess() {
+  accessPage.hidden = false;
+  landingPage.hidden = true;
+  inventoryApp.hidden = true;
+  document.body.classList.remove("inventory-active");
+  accessError.textContent = "";
+  setTimeout(() => accessCodeInput.focus(), 0);
 }
 
 function createDraftProduct() {
@@ -1645,10 +1689,28 @@ async function startInvento() {
   await initializeInventoryState();
   syncStoredUiState();
   render();
+  if (hasAccess()) {
+    showLanding();
+  } else {
+    showAccess();
+  }
 }
 
 startInvento();
-showLanding();
+
+accessForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const expected = normalizeAccessCode(accessCode);
+  const submitted = normalizeAccessCode(accessCodeInput.value);
+
+  if (submitted === expected) {
+    grantAccess();
+    return;
+  }
+
+  accessError.textContent = "Der Zugangscode ist nicht korrekt.";
+  accessCodeInput.select();
+});
 
 addProductButton.addEventListener("click", addDraftAndOpen);
 
@@ -1670,6 +1732,8 @@ openInventoryTopButton.addEventListener("click", () => {
     showLanding();
   });
 });
+
+logoutButton.addEventListener("click", revokeAccess);
 
 queueList.addEventListener("click", (event) => {
   const item = event.target.closest(".queue-item");

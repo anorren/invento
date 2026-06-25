@@ -5,9 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Invento - Audio & Licht Inventar Software</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=access-1">
   </head>
   <body>
+    <main class="access-page" id="accessPage">
+      <section class="access-shell" aria-labelledby="accessTitle">
+        <div class="brand access-brand" aria-label="App">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div>
+            <h1>Invento</h1>
+            <p>Audio &amp; Licht Inventar Software</p>
+          </div>
+        </div>
+
+        <div class="access-panel">
+          <p class="landing-kicker">Geschützter Arbeitsbereich</p>
+          <h2 id="accessTitle">Inventar öffnen</h2>
+          <p>Gib den Zugangscode ein, um die Inventarliste zu laden und Produkte zu bearbeiten.</p>
+
+          <form class="access-form" id="accessForm" autocomplete="off">
+            <label class="field access-field">
+              <span>Zugangscode</span>
+              <input id="accessCodeInput" type="password" inputmode="text" autocomplete="off">
+            </label>
+            <button class="primary-button access-submit" type="submit">
+              <span>Inventar öffnen</span>
+            </button>
+            <span class="access-error" id="accessError" role="alert"></span>
+          </form>
+        </div>
+      </section>
+    </main>
+
     <main class="landing-page" id="landingPage">
       <header class="landing-topbar">
         <section class="brand" aria-label="App">
@@ -113,6 +144,10 @@
           <button class="quiet-button" id="homeButton" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
             <span>Startseite</span>
+          </button>
+          <button class="quiet-button" id="logoutButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+            <span>Abmelden</span>
           </button>
           <button class="quiet-button" id="pauseButton" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
@@ -335,6 +370,6 @@
 
     <script src="vendor/supabase.js"></script>
     <script src="supabase-config.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=access-1"></script>
   </body>
 </html>
