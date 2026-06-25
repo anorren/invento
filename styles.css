@@ -1828,13 +1828,17 @@ textarea:focus {
   }
 
   .inventory-app {
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-rows: 68px minmax(0, 1fr) 64px;
   }
 
   .topbar {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(230px, 260px) minmax(0, 1fr);
     gap: 12px;
-    padding: 14px 16px;
+    padding: 0 16px 0 0;
+  }
+
+  .brand-button {
+    width: 260px;
   }
 
   .brand,
@@ -1843,14 +1847,22 @@ textarea:focus {
     padding: 0;
   }
 
+  .topbar .progress-block {
+    display: none;
+  }
+
   .top-actions {
     padding: 0;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    justify-content: flex-end;
+    justify-self: end;
+    flex-wrap: nowrap;
   }
 
   .landing-nav {
-    width: 100%;
+    width: auto;
+    margin-left: auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
   }
 
   .layout {
@@ -1905,6 +1917,32 @@ textarea:focus {
 
   .landing-page {
     display: block;
+  }
+
+  .inventory-app {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .topbar {
+    grid-template-columns: 1fr;
+    padding: 14px 16px;
+  }
+
+  .brand-button {
+    width: 100%;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+    justify-self: stretch;
+    flex-wrap: wrap;
+  }
+
+  .landing-nav {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .landing-topbar {
