@@ -177,12 +177,13 @@ svg {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
-  padding-right: 24px;
+  gap: 16px;
+  padding-right: 18px;
 }
 
 .topbar {
   display: grid;
-  grid-template-columns: 310px minmax(420px, 1fr) auto;
+  grid-template-columns: 310px minmax(280px, 1fr) auto;
   align-items: center;
   border-bottom: 1px solid var(--line);
   min-width: 0;
@@ -485,6 +486,11 @@ figure {
   justify-content: flex-end;
   gap: 12px;
   padding: 0 20px;
+  min-width: 0;
+}
+
+.landing-nav {
+  padding: 0;
 }
 
 .layout {
@@ -640,7 +646,11 @@ figure {
 }
 
 .quiet-button {
-  min-width: 158px;
+  min-width: 132px;
+}
+
+.landing-nav .quiet-button {
+  min-width: 0;
 }
 
 .secondary-button,
@@ -1839,6 +1849,10 @@ textarea:focus {
     flex-wrap: wrap;
   }
 
+  .landing-nav {
+    width: 100%;
+  }
+
   .layout {
     grid-template-columns: 290px minmax(460px, 1fr);
   }
@@ -1905,7 +1919,8 @@ textarea:focus {
     padding: 0;
   }
 
-  .landing-topbar .quiet-button {
+  .landing-topbar .quiet-button,
+  .landing-nav .quiet-button {
     width: 100%;
   }
 

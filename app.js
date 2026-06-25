@@ -34,7 +34,9 @@ const locations = [
 const purchaseYears = Array.from({ length: 41 }, (_, index) => String(2000 + index));
 const storageKey = "invento.inventory.v2";
 const accessStorageKey = "invento.access.granted.v1";
+const accessExpiresStorageKey = "invento.access.expiresAt.v1";
 const accessCode = "Musik2026";
+const accessSessionMs = 2 * 60 * 60 * 1000;
 const supabaseTable = "inventory_items";
 
 const inventoryIdRules = {
@@ -345,11 +347,14 @@ const addProductButton = document.querySelector("#addProductButton");
 const editProductsButton = document.querySelector("#editProductsButton");
 const landingScanButton = document.querySelector("#landingScanButton");
 const openInventoryTopButton = document.querySelector("#openInventoryTopButton");
+const addProductTopButton = document.querySelector("#addProductTopButton");
+const logoutLandingButton = document.querySelector("#logoutLandingButton");
 const landingTotalCount = document.querySelector("#landingTotalCount");
 const landingCapturedCount = document.querySelector("#landingCapturedCount");
 const landingAreaCount = document.querySelector("#landingAreaCount");
 const brandHomeButton = document.querySelector("#brandHomeButton");
 const homeButton = document.querySelector("#homeButton");
+const addProductInventoryButton = document.querySelector("#addProductInventoryButton");
 const logoutButton = document.querySelector("#logoutButton");
 const queueList = document.querySelector("#queueList");
 const queueCount = document.querySelector("#queueCount");
@@ -418,11 +423,21 @@ function normalizeAccessCode(value) {
 }
 
 function hasAccess() {
-  return localStorage.getItem(accessStorageKey) === "true";
+  const expiresAt = Number(localStorage.getItem(accessExpiresStorageKey) || "0");
+  const isGranted = localStorage.getItem(accessStorageKey) === "true";
+
+  if (!isGranted || !expiresAt || Date.now() > expiresAt) {
+    localStorage.removeItem(accessStorageKey);
+    localStorage.removeItem(accessExpiresStorageKey);
+    return false;
+  }
+
+  return true;
 }
 
 function grantAccess() {
   localStorage.setItem(accessStorageKey, "true");
+  localStorage.setItem(accessExpiresStorageKey, String(Date.now() + accessSessionMs));
   accessError.textContent = "";
   accessCodeInput.value = "";
   showLanding();
@@ -430,6 +445,7 @@ function grantAccess() {
 
 function revokeAccess() {
   localStorage.removeItem(accessStorageKey);
+  localStorage.removeItem(accessExpiresStorageKey);
   showAccess();
   showToast("Abgemeldet");
 }
@@ -1714,6 +1730,10 @@ accessForm.addEventListener("submit", (event) => {
 
 addProductButton.addEventListener("click", addDraftAndOpen);
 
+addProductTopButton.addEventListener("click", addDraftAndOpen);
+
+addProductInventoryButton.addEventListener("click", addDraftAndOpen);
+
 landingScanButton.addEventListener("click", scanProductAndOpen);
 
 editProductsButton.addEventListener("click", () => {
@@ -1734,6 +1754,8 @@ openInventoryTopButton.addEventListener("click", () => {
 });
 
 logoutButton.addEventListener("click", revokeAccess);
+
+logoutLandingButton.addEventListener("click", revokeAccess);
 
 queueList.addEventListener("click", (event) => {
   const item = event.target.closest(".queue-item");

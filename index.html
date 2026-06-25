@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Invento - Audio & Licht Inventar Software</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=access-1">
+    <link rel="stylesheet" href="styles.css?v=session-1">
   </head>
   <body>
     <main class="access-page" id="accessPage">
@@ -50,10 +50,20 @@
             <p>Audio &amp; Licht Inventar Software</p>
           </div>
         </section>
-        <button class="quiet-button" id="openInventoryTopButton" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          <span>Inventar öffnen</span>
-        </button>
+        <nav class="top-actions landing-nav" aria-label="App-Navigation">
+          <button class="quiet-button" id="openInventoryTopButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            <span>Inventar</span>
+          </button>
+          <button class="quiet-button" id="addProductTopButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Produkt hinzufügen</span>
+          </button>
+          <button class="quiet-button" id="logoutLandingButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+            <span>Abmelden</span>
+          </button>
+        </nav>
       </header>
 
       <section class="landing-hero">
@@ -145,6 +155,10 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
             <span>Startseite</span>
           </button>
+          <button class="quiet-button" id="addProductInventoryButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Produkt hinzufügen</span>
+          </button>
           <button class="quiet-button" id="logoutButton" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
             <span>Abmelden</span>
@@ -153,11 +167,6 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
             <span>Pause</span>
           </button>
-          <button class="icon-button" type="button" aria-label="Team anzeigen">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>3</span>
-          </button>
-          <button class="profile-button" type="button" aria-label="Profil">TK</button>
         </nav>
       </header>
 
@@ -370,6 +379,6 @@
 
     <script src="vendor/supabase.js"></script>
     <script src="supabase-config.js"></script>
-    <script src="app.js?v=access-1"></script>
+    <script src="app.js?v=session-1"></script>
   </body>
 </html>
