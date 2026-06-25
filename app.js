@@ -33,9 +33,7 @@ const locations = [
 ];
 const purchaseYears = Array.from({ length: 41 }, (_, index) => String(2000 + index));
 const storageKey = "invento.inventory.v2";
-const accessStorageKey = "invento.access.granted.v1";
 const accessExpiresStorageKey = "invento.access.expiresAt.v1";
-const accessCode = "Musik2026";
 const accessSessionMs = 2 * 60 * 60 * 1000;
 const supabaseTable = "inventory_items";
 
@@ -339,7 +337,9 @@ const initialDevices = [
 
 const accessPage = document.querySelector("#accessPage");
 const accessForm = document.querySelector("#accessForm");
-const accessCodeInput = document.querySelector("#accessCodeInput");
+const accessEmailInput = document.querySelector("#accessEmailInput");
+const accessPasswordInput = document.querySelector("#accessPasswordInput");
+const accessSubmitButton = document.querySelector("#accessSubmitButton");
 const accessError = document.querySelector("#accessError");
 const landingPage = document.querySelector("#landingPage");
 const inventoryApp = document.querySelector("#inventoryApp");
@@ -417,17 +417,11 @@ let draftCounter = 1;
 let supabaseClient = null;
 let dataMode = "local";
 let remoteSaveTimer = null;
+let inventoryInitialized = false;
 
-function normalizeAccessCode(value) {
-  return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
-}
-
-function hasAccess() {
+function isAccessSessionCurrent() {
   const expiresAt = Number(localStorage.getItem(accessExpiresStorageKey) || "0");
-  const isGranted = localStorage.getItem(accessStorageKey) === "true";
-
-  if (!isGranted || !expiresAt || Date.now() > expiresAt) {
-    localStorage.removeItem(accessStorageKey);
+  if (!expiresAt || Date.now() > expiresAt) {
     localStorage.removeItem(accessExpiresStorageKey);
     return false;
   }
@@ -435,17 +429,43 @@ function hasAccess() {
   return true;
 }
 
-function grantAccess() {
-  localStorage.setItem(accessStorageKey, "true");
+function extendAccessSession() {
   localStorage.setItem(accessExpiresStorageKey, String(Date.now() + accessSessionMs));
+}
+
+async function hasAccess() {
+  if (!supabaseClient) {
+    return false;
+  }
+
+  const { data } = await supabaseClient.auth.getSession();
+  if (!data.session) {
+    return false;
+  }
+
+  if (!isAccessSessionCurrent()) {
+    await supabaseClient.auth.signOut();
+    return false;
+  }
+
+  return true;
+}
+
+function grantAccess() {
+  extendAccessSession();
   accessError.textContent = "";
-  accessCodeInput.value = "";
+  accessPasswordInput.value = "";
   showLanding();
 }
 
-function revokeAccess() {
-  localStorage.removeItem(accessStorageKey);
+async function revokeAccess() {
   localStorage.removeItem(accessExpiresStorageKey);
+  if (supabaseClient) {
+    await supabaseClient.auth.signOut();
+  }
+  inventoryInitialized = false;
+  devices = [];
+  selectedId = "";
   showAccess();
   showToast("Abgemeldet");
 }
@@ -499,6 +519,10 @@ function hasSupabaseConfig() {
 }
 
 function initializeSupabaseClient() {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+
   if (!hasSupabaseConfig()) {
     dataMode = "local";
     return null;
@@ -643,12 +667,12 @@ async function initializeInventoryState() {
   if (supabaseClient) {
     try {
       const remoteDevices = await loadRemoteDevices();
-      if (remoteDevices?.length) {
+      if (Array.isArray(remoteDevices)) {
         devices = remoteDevices;
         selectedId = devices[0]?.id || "";
         saveStoredState();
-        showToast("Inventar aus Supabase geladen");
-        return;
+        showToast(remoteDevices.length ? "Inventar aus Supabase geladen" : "Supabase-Inventar ist leer");
+        return true;
       }
     } catch (error) {
       console.warn("Invento konnte Supabase-Daten nicht laden.", error);
@@ -668,12 +692,24 @@ async function initializeInventoryState() {
     hideDone = Boolean(storedState.hideDone);
     paused = Boolean(storedState.paused);
     draftCounter = Number.isInteger(storedState.draftCounter) ? storedState.draftCounter : 1;
-    return;
+    return true;
   }
 
   devices = [];
   selectedId = "";
   saveStoredState();
+  return true;
+}
+
+async function prepareInventoryForSession() {
+  if (inventoryInitialized) {
+    return;
+  }
+
+  await initializeInventoryState();
+  syncStoredUiState();
+  render();
+  inventoryInitialized = true;
 }
 
 function syncStoredUiState() {
@@ -1456,12 +1492,13 @@ function showLanding() {
   document.body.classList.remove("inventory-active");
 }
 
-function showInventory(message) {
-  if (!hasAccess()) {
+async function showInventory(message) {
+  if (!await hasAccess()) {
     showAccess();
     return;
   }
 
+  await prepareInventoryForSession();
   accessPage.hidden = true;
   landingPage.hidden = true;
   inventoryApp.hidden = false;
@@ -1479,7 +1516,7 @@ function showAccess() {
   inventoryApp.hidden = true;
   document.body.classList.remove("inventory-active");
   accessError.textContent = "";
-  setTimeout(() => accessCodeInput.focus(), 0);
+  setTimeout(() => accessEmailInput.focus(), 0);
 }
 
 function createDraftProduct() {
@@ -1702,10 +1739,10 @@ async function deleteCurrentProduct() {
 
 async function startInvento() {
   seedSelects();
-  await initializeInventoryState();
-  syncStoredUiState();
-  render();
-  if (hasAccess()) {
+  initializeSupabaseClient();
+
+  if (await hasAccess()) {
+    await prepareInventoryForSession();
     showLanding();
   } else {
     showAccess();
@@ -1714,18 +1751,41 @@ async function startInvento() {
 
 startInvento();
 
-accessForm.addEventListener("submit", (event) => {
+accessForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const expected = normalizeAccessCode(accessCode);
-  const submitted = normalizeAccessCode(accessCodeInput.value);
+  const email = accessEmailInput.value.trim();
+  const password = accessPasswordInput.value;
 
-  if (submitted === expected) {
-    grantAccess();
+  if (!email || !password) {
+    accessError.textContent = "Bitte E-Mail und Passwort eingeben.";
     return;
   }
 
-  accessError.textContent = "Der Zugangscode ist nicht korrekt.";
-  accessCodeInput.select();
+  initializeSupabaseClient();
+  if (!supabaseClient) {
+    accessError.textContent = "Supabase ist noch nicht konfiguriert.";
+    return;
+  }
+
+  accessSubmitButton.disabled = true;
+  accessError.textContent = "";
+
+  try {
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+      throw error;
+    }
+
+    grantAccess();
+    await prepareInventoryForSession();
+    showLanding();
+    showToast("Angemeldet");
+  } catch (error) {
+    accessError.textContent = "Anmeldung fehlgeschlagen. Prüfe E-Mail und Passwort.";
+    accessPasswordInput.select();
+  } finally {
+    accessSubmitButton.disabled = false;
+  }
 });
 
 addProductButton.addEventListener("click", addDraftAndOpen);

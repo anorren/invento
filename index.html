@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Invento - Audio & Licht Inventar Software</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=layout-1">
+    <link rel="stylesheet" href="styles.css?v=auth-1">
   </head>
   <body>
     <main class="access-page" id="accessPage">
@@ -23,15 +23,19 @@
         <div class="access-panel">
           <p class="landing-kicker">Geschützter Arbeitsbereich</p>
           <h2 id="accessTitle">Inventar öffnen</h2>
-          <p>Gib den Zugangscode ein, um die Inventarliste zu laden und Produkte zu bearbeiten.</p>
+          <p>Melde dich mit dem Invento-Zugang an, um die Inventarliste zu laden und Produkte zu bearbeiten.</p>
 
           <form class="access-form" id="accessForm" autocomplete="off">
             <label class="field access-field">
-              <span>Zugangscode</span>
-              <input id="accessCodeInput" type="password" inputmode="text" autocomplete="off">
+              <span>E-Mail</span>
+              <input id="accessEmailInput" type="email" inputmode="email" autocomplete="username">
             </label>
-            <button class="primary-button access-submit" type="submit">
-              <span>Inventar öffnen</span>
+            <label class="field access-field">
+              <span>Passwort</span>
+              <input id="accessPasswordInput" type="password" autocomplete="current-password">
+            </label>
+            <button class="primary-button access-submit" id="accessSubmitButton" type="submit">
+              <span>Anmelden</span>
             </button>
             <span class="access-error" id="accessError" role="alert"></span>
           </form>
@@ -379,6 +383,6 @@
 
     <script src="vendor/supabase.js"></script>
     <script src="supabase-config.js"></script>
-    <script src="app.js?v=session-1"></script>
+    <script src="app.js?v=auth-2"></script>
   </body>
 </html>
